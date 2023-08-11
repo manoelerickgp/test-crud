@@ -3,6 +3,7 @@ package com.estudo.dscatalog.resources;
 import com.estudo.dscatalog.DTO.CategoryDTO;
 import com.estudo.dscatalog.entities.Category;
 import com.estudo.dscatalog.services.CategoryService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,9 +33,15 @@ public class CategoryResource {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDTO> insert(@RequestBody CategoryDTO objDTO) {
+    public ResponseEntity<CategoryDTO> insert(@RequestBody CategoryDTO objDTO){
         objDTO = service.insert(objDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(objDTO.getId()).toUri();
+        return ResponseEntity.created(uri).body(objDTO);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<CategoryDTO> update(@PathVariable Long id, @RequestBody CategoryDTO objDTO){
+        objDTO = service.update(id, objDTO);
         return ResponseEntity.ok().body(objDTO);
     }
 }
