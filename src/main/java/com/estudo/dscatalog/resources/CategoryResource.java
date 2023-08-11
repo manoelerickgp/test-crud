@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.swing.text.html.parser.Entity;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,5 +44,11 @@ public class CategoryResource {
     public ResponseEntity<CategoryDTO> update(@PathVariable Long id, @RequestBody CategoryDTO objDTO){
         objDTO = service.update(id, objDTO);
         return ResponseEntity.ok().body(objDTO);
+    }
+
+    @DeleteMapping(value ="/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
