@@ -53,16 +53,8 @@ public class Category implements Serializable {
         return createAt;
     }
 
-    public void setCreateAt(Instant createAt) {
-        this.createAt = createAt;
-    }
-
     public Instant getUpdateAt() {
         return updateAt;
-    }
-
-    public void setUpdateAt(Instant updateAt) {
-        this.updateAt = updateAt;
     }
 
     @Override
