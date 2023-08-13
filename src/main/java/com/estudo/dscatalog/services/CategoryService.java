@@ -52,6 +52,7 @@ public class CategoryService {
         }
     }
 
+    @Transactional
     public void delete(Long id){
         try {
             Category obj = repository.getReferenceById(id);
