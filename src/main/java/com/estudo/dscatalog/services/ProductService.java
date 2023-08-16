@@ -23,14 +23,14 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAll(PageRequest pageRequest){
         Page<Product> list = repository.findAll(pageRequest);
-        return list.map(prod -> new ProductDTO(prod));
+        return list.map(prod -> new ProductDTO(prod, prod.getCategories()));
     }
 
     @Transactional(readOnly = true)
     public ProductDTO findById(Long id) {
         Optional<Product> obj = repository.findById(id);
         Product prod = obj.orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-        return new ProductDTO(prod);
+        return new ProductDTO(prod, prod.getCategories());
     }
 
     @Transactional

@@ -1,5 +1,6 @@
 package com.estudo.dscatalog.DTO;
 
+import com.estudo.dscatalog.entities.Category;
 import com.estudo.dscatalog.entities.Product;
 
 import java.io.Serializable;
@@ -40,9 +41,9 @@ public class ProductDTO implements Serializable {
         this.date = entity.getDate();
     }
 
-    public ProductDTO(Product entity, Set<CategoryDTO> categories) {
+    public ProductDTO(Product entity, Set<Category> categories) {
         this(entity);
-        categories.forEach(categoria -> this.categories.add(categoria));
+        categories.forEach(categoria -> this.categories.add(new CategoryDTO(categoria)));
     }
 
     public Long getId() {
