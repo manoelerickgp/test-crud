@@ -50,7 +50,7 @@ public class CategoryService {
             return new CategoryDTO(entity);
         }
         catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("Id not found: " + id);
+            throw new ResourceNotFoundException("Category id not found: " + id);
         }
     }
 
