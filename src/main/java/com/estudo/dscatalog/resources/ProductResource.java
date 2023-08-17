@@ -3,6 +3,7 @@ package com.estudo.dscatalog.resources;
 import com.estudo.dscatalog.DTO.ProductDTO;
 import com.estudo.dscatalog.entities.Product;
 import com.estudo.dscatalog.services.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -16,11 +17,8 @@ import java.net.URI;
 @RequestMapping("/products")
 public class ProductResource {
 
+    @Autowired
     private ProductService service;
-
-    public ProductResource(ProductService service) {
-        this.service = service;
-    }
 
     @GetMapping
     public ResponseEntity<Page<ProductDTO>> findAll(
