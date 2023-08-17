@@ -1,11 +1,16 @@
 package com.estudo.dscatalog.services;
 
+import com.estudo.dscatalog.DTO.CategoryDTO;
 import com.estudo.dscatalog.DTO.ProductDTO;
+import com.estudo.dscatalog.entities.Category;
 import com.estudo.dscatalog.entities.Product;
+import com.estudo.dscatalog.repositories.CategoryRepository;
 import com.estudo.dscatalog.repositories.ProductRepository;
+import com.estudo.dscatalog.services.exceptions.DatabaseException;
 import com.estudo.dscatalog.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +23,10 @@ import java.util.Optional;
 public class ProductService {
 
     @Autowired
-    ProductRepository repository;
+    private ProductRepository repository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAll(PageRequest pageRequest){
@@ -34,18 +42,18 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDTO insert(ProductDTO objDTO){
-        Product prod = convertDtoToEntity(objDTO);
-        prod = repository.save(prod);
-        return new ProductDTO(prod);
+    public ProductDTO insert(ProductDTO newObj){
+        Product entity = new Product();
+        convertDtoToEntity(entity, newObj);
+        entity = repository.save(entity);
+        return new ProductDTO(entity);
     }
 
     @Transactional
     public ProductDTO update(ProductDTO newObj, Long id) {
         try {
-            Product entity = new Product();
-            entity = repository.getReferenceById(id);
-            updateData(entity, newObj);
+            Product entity = repository.getReferenceById(id);
+            convertDtoToEntity(entity, newObj);
             return new ProductDTO(entity);
         }
         catch (EntityNotFoundException e){
@@ -56,24 +64,28 @@ public class ProductService {
     @Transactional
     public void delete(Long id) {
         try {
-            Product prod = repository.getReferenceById(id);
-            repository.delete(prod);
+            repository.deleteById(id);
         }
         catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException("Entity not found for delete");
+            throw new ResourceNotFoundException("Id not found "+ id);
+        }
+        catch (DataIntegrityViolationException e){
+            throw new DatabaseException("Integrity violation");
         }
     }
 
-    private Product convertDtoToEntity(ProductDTO dto) {
-        return new Product(dto.getName(), dto.getDescription(), dto.getPrice(), dto.getImgUrl(), dto.getDate());
-    }
-
-    private void updateData(Product entity, ProductDTO newObj) {
+    private void convertDtoToEntity(Product entity, ProductDTO newObj) {
         entity.setName(newObj.getName());
         entity.setDescription(newObj.getDescription());
         entity.setPrice(newObj.getPrice());
         entity.setImgUrl(newObj.getImgUrl());
         entity.setDate(newObj.getDate());
+
+        entity.getCategories().clear();
+        for (CategoryDTO catDTO : newObj.getCategories()) {
+            Category category = categoryRepository.getReferenceById(catDTO.getId());
+            entity.getCategories().add(category);
+        }
     }
 
 }
